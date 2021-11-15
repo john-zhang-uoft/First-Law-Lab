@@ -11,7 +11,7 @@ def get_fan_power(file):
     data = pd.read_csv(file, sep='\t', skiprows=2)
 
     # Set constants
-    P1 = ufloat(0.001, 0.00005) * 735.499    # Lab power output, [W]
+    P1 = ufloat(0.001, 0.00005) * 735.499  # Lab power output, [W]
     P1 = np.ones(data.shape[0]) * P1
 
     n1 = ufloat(4200, 0.5)  # Lab shaft speed, [rpm]
@@ -63,5 +63,25 @@ if __name__ == '__main__':
 
         plt.show()
         fig.savefig(f'P{files[i][6:12]}.png')
+
+    part2_files = ['data/part_2a.txt', 'data/part_2b.txt', 'data/part_2c.txt', 'data/part_2d.txt']
+
+    masses = [ufloat(23, 0.5), ufloat(42, 0.5), ufloat(23, 0.5), ufloat(40, 0.5)]
+
+    # Find rate of temperature decrease
+    for i in range(len(part2_files)):
+        time = pd.read_csv(part2_files[i], sep='\t', skiprows=2)
+        time = time['Time(s)']
+        data = get_fan_power(part2_files[i])
+        data = data / (masses[i] * ufloat(716.5, 0.05))
+
+        plt.scatter(time, unp.nominal_values(data), s=3)
+        plt.title(f'Rate of Temperature Change vs. Time P{part2_files[i][6:12]}')
+        plt.xlabel('Time(s)')
+        plt.ylabel('Rate of temperature change (C/s)')
+        fig = plt.gcf()
+
+        plt.show()
+        fig.savefig(f'Temperature_rateP{part2_files[i][6:12]}.png')
 
     print(results)
